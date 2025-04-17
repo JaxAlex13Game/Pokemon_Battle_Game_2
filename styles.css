@@ -154,4 +154,123 @@
   .title-pokemon img:hover {
     transform: translateY(-10px);
   }
-  
+  /* VS Screen */
+.vs-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1s;
+}
+
+.vs-screen.show {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.vs-content {
+  display: flex;
+  align-items: center;
+  gap: 50px;
+}
+
+.vs-pokemon {
+  text-align: center;
+}
+
+.vs-pokemon img {
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
+}
+
+.vs-text {
+  font-size: 80px;
+  color: white;
+  font-weight: bold;
+  text-shadow: 0 0 20px red;
+  animation: pulse 1.5s infinite;
+}
+
+/* Victory Screen */
+.victory-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1s;
+}
+
+.victory-screen.show {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.victory-content {
+  text-align: center;
+  color: white;
+}
+
+.victory-content h1 {
+  font-size: 80px;
+  color: gold;
+  text-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
+  margin-bottom: 40px;
+  animation: bounce 0.5s infinite alternate;
+}
+
+.winner-pokemon img {
+  width: 250px;
+  height: 250px;
+  object-fit: contain;
+}
+
+.winner-pokemon h2 {
+  font-size: 40px;
+  color: white;
+  margin-top: 20px;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+#continue-btn {
+  margin-top: 40px;
+  padding: 15px 30px;
+  font-size: 20px;
+  background: linear-gradient(to bottom, #ffde00, #ff9900);
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+#continue-btn:hover {
+  transform: scale(1.1);
+}
+
+/* Animations */
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.8; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes bounce {
+  from { transform: translateY(0); }
+  to { transform: translateY(-20px); }
+}
