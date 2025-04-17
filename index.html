@@ -6,7 +6,33 @@
   <title>Pokémon Battle Game 2</title>
   <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<!-- VS Screen -->
+<div id="vs-screen" class="vs-screen">
+  <div class="vs-content">
+    <div class="vs-pokemon left">
+      <img id="vs-pokemon1-img" src="" alt="">
+      <h2 id="vs-pokemon1-name"></h2>
+    </div>
+    <div class="vs-text">VS</div>
+    <div class="vs-pokemon right">
+      <img id="vs-pokemon2-img" src="" alt="">
+      <h2 id="vs-pokemon2-name"></h2>
+    </div>
+  </div>
+</div>
+
+<!-- Victory Screen -->
+<div id="victory-screen" class="victory-screen">
+  <div class="victory-content">
+    <h1>VICTORY!</h1>
+    <div class="winner-pokemon">
+      <img id="winner-img" src="" alt="">
+      <h2 id="winner-name"></h2>
+    </div>
+    <button id="continue-btn">Continue</button>
+  </div>
+</div>
+  <body>
   <!-- Title Screen -->
   <div id="title-screen" class="title-screen">
     <h1>Pokémon Battle Game 2</h1>
