@@ -763,7 +763,7 @@ function showVsScreen(pokemon1, pokemon2) {
   setTimeout(() => {
     showScreen(gameScreen);
     simulateBattle(pokemon1, pokemon2);
-  }, 3000);
+  }, 2000); // Reduced from 3000 to 2000 for better UX
 }
 
 function showVictoryScreen(winner) {
@@ -840,42 +840,47 @@ function endBattle(pokemon1, pokemon2) {
 }
 
 // Event listeners
-startGameBtn.addEventListener("click", () => {
-  const [pokemon1, pokemon2] = getTwoUniquePokemon();
-  currentPokemon1 = { ...pokemon1 };
-  currentPokemon2 = { ...pokemon2 };
-  showVsScreen(currentPokemon1, currentPokemon2);
-});
+function initializeGame() {
+  startGameBtn.addEventListener("click", () => {
+    const [pokemon1, pokemon2] = getTwoUniquePokemon();
+    currentPokemon1 = { ...pokemon1 };
+    currentPokemon2 = { ...pokemon2 };
+    showVsScreen(currentPokemon1, currentPokemon2);
+  });
 
-startBattleBtn.addEventListener("click", () => {
-  if (battleInterval) clearInterval(battleInterval);
-  const [pokemon1, pokemon2] = getTwoUniquePokemon();
-  currentPokemon1 = { ...pokemon1 };
-  currentPokemon2 = { ...pokemon2 };
-  showVsScreen(currentPokemon1, currentPokemon2);
-});
+  startBattleBtn.addEventListener("click", () => {
+    if (battleInterval) clearInterval(battleInterval);
+    const [pokemon1, pokemon2] = getTwoUniquePokemon();
+    currentPokemon1 = { ...pokemon1 };
+    currentPokemon2 = { ...pokemon2 };
+    showVsScreen(currentPokemon1, currentPokemon2);
+  });
 
-continueBtn.addEventListener("click", () => {
-  showScreen(gameScreen);
-});
+  continueBtn.addEventListener("click", () => {
+    showScreen(gameScreen);
+  });
 
-howToPlayBtn.addEventListener("click", () => {
-  modal.classList.remove('hidden');
-});
+  howToPlayBtn.addEventListener("click", () => {
+    modal.classList.remove('hidden');
+  });
 
-howToPlayBtnTitle.addEventListener("click", () => {
-  modal.classList.remove('hidden');
-});
+  howToPlayBtnTitle.addEventListener("click", () => {
+    modal.classList.remove('hidden');
+  });
 
-closeModal.addEventListener("click", () => {
-  modal.classList.add('hidden');
-});
-
-window.addEventListener("click", (event) => {
-  if (event.target == modal) {
+  closeModal.addEventListener("click", () => {
     modal.classList.add('hidden');
-  }
-});
+  });
 
-// Initialize game
-showScreen(titleScreen);
+  window.addEventListener("click", (event) => {
+    if (event.target == modal) {
+      modal.classList.add('hidden');
+    }
+  });
+
+  // Initialize game
+  showScreen(titleScreen);
+}
+
+// Start the game when DOM is loaded
+document.addEventListener('DOMContentLoaded', initializeGame);
