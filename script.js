@@ -774,20 +774,24 @@ function showVictoryScreen(winner) {
 
 // Battle functions
 function simulateBattle(pokemon1, pokemon2) {
+  // Create copies of the Pokémon to avoid modifying originals
+  const battlePokemon1 = {...pokemon1};
+  const battlePokemon2 = {...pokemon2};
+  
   battleLog.innerHTML = "";
   startBattleBtn.disabled = true;
   
-  displayPokemon(pokemon1, pokemon1Element);
-  displayPokemon(pokemon2, pokemon2Element);
+  displayPokemon(battlePokemon1, pokemon1Element);
+  displayPokemon(battlePokemon2, pokemon2Element);
 
-  let attacker = pokemon1;
-  let defender = pokemon2;
+  let attacker = battlePokemon1;
+  let defender = battlePokemon2;
   let attackerElement = pokemon1Element;
   let defenderElement = pokemon2Element;
 
   battleInterval = setInterval(() => {
-    if (pokemon1.hp <= 0 || pokemon2.hp <= 0) {
-      endBattle(pokemon1, pokemon2);
+    if (battlePokemon1.hp <= 0 || battlePokemon2.hp <= 0) {
+      endBattle(battlePokemon1, battlePokemon2);
       return;
     }
 
@@ -800,13 +804,13 @@ function simulateBattle(pokemon1, pokemon2) {
     if (shouldApplyDamage(attacker.types, defender, damage)) {
       defender.hp -= damage;
       attackMessage += `${getEffectivenessMessage(effectiveness)} ${defender.name} takes ${damage} damage! (${Math.max(0, defender.hp)} HP left)`;
+      defenderElement.querySelector(".pokemon-hp").textContent = `HP: ${Math.max(0, defender.hp)}`;
     } else {
       attackMessage += `${defender.name}'s Wonder Guard blocked the attack!`;
     }
 
     battleLog.innerHTML += attackMessage + "<br>";
     battleLog.scrollTop = battleLog.scrollHeight;
-    defenderElement.querySelector(".pokemon-hp").textContent = `HP: ${Math.max(0, defender.hp)}`;
 
     attackerElement.classList.add("attack-animation");
     defenderElement.classList.add("damage-animation");
@@ -817,7 +821,7 @@ function simulateBattle(pokemon1, pokemon2) {
       
       if (defender.hp <= 0) {
         defenderElement.classList.add("faint-animation");
-        endBattle(pokemon1, pokemon2);
+        endBattle(battlePokemon1, battlePokemon2);
       } else {
         [attacker, defender] = [defender, attacker];
         [attackerElement, defenderElement] = [defenderElement, attackerElement];
@@ -875,4 +879,3 @@ window.addEventListener("click", (event) => {
 
 // Initialize game
 showScreen(titleScreen);
-}
