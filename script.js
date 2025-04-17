@@ -841,3 +841,71 @@ currentPokemon1 = { ...initialPokemon1 };
 currentPokemon2 = { ...initialPokemon2 };
 displayPokemon(currentPokemon1, pokemon1Element);
 displayPokemon(currentPokemon2, pokemon2Element);
+// Show VS screen
+function showVsScreen(pokemon1, pokemon2) {
+  const vsScreen = document.getElementById('vs-screen');
+  const vsPokemon1Img = document.getElementById('vs-pokemon1-img');
+  const vsPokemon1Name = document.getElementById('vs-pokemon1-name');
+  const vsPokemon2Img = document.getElementById('vs-pokemon2-img');
+  const vsPokemon2Name = document.getElementById('vs-pokemon2-name');
+
+  vsPokemon1Img.src = pokemon1.image;
+  vsPokemon1Name.textContent = pokemon1.name;
+  vsPokemon2Img.src = pokemon2.image;
+  vsPokemon2Name.textContent = pokemon2.name;
+
+  vsScreen.classList.add('show');
+
+  // Hide after 3 seconds
+  setTimeout(() => {
+    vsScreen.classList.remove('show');
+    // Start battle after VS screen
+    simulateBattle(pokemon1, pokemon2);
+  }, 3000);
+}
+
+// Show victory screen
+function showVictoryScreen(winner) {
+  const victoryScreen = document.getElementById('victory-screen');
+  const winnerImg = document.getElementById('winner-img');
+  const winnerName = document.getElementById('winner-name');
+  const continueBtn = document.getElementById('continue-btn');
+
+  winnerImg.src = winner.image;
+  winnerName.textContent = winner.name;
+
+  victoryScreen.classList.add('show');
+
+  continueBtn.onclick = function() {
+    victoryScreen.classList.remove('show');
+    // Reset game or start new battle
+  };
+}
+
+// Modify your start battle code to use VS screen
+startBattleButton.addEventListener("click", () => {
+  if (battleInterval) {
+    clearInterval(battleInterval);
+    battleInterval = null;
+  }
+
+  const [pokemon1, pokemon2] = getTwoUniquePokemon();
+  currentPokemon1 = { ...pokemonList.find(p => p.name === pokemon1.name) };
+  currentPokemon2 = { ...pokemonList.find(p => p.name === pokemon2.name) };
+
+  // Show VS screen first
+  showVsScreen(currentPokemon1, currentPokemon2);
+});
+
+// Modify your endBattle function to show victory screen
+function endBattle(pokemon1, pokemon2) {
+  clearInterval(battleInterval);
+  battleInterval = null;
+
+  const winner = pokemon1.hp > 0 ? pokemon1 : pokemon2;
+  
+  // Show victory screen after 1 second delay
+  setTimeout(() => {
+    showVictoryScreen(winner);
+  }, 1000);
+}
