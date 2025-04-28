@@ -618,18 +618,10 @@ const pokemonList = [
 ]; 
 
 // DOM Elements
-const titleScreen = document.getElementById('title-screen');
-const gameScreen = document.getElementById('game-screen');
-const startGameBtn = document.getElementById('start-game');
-const startBattleBtn = document.getElementById('start-battle');
-const continueBtn = document.getElementById('continue-btn');
-const howToPlayBtn = document.getElementById('how-to-play');
-const howToPlayBtnTitle = document.getElementById('how-to-play-btn');
-const modal = document.getElementById('how-to-play-modal');
-const closeModal = document.querySelector('.close');
-const pokemon1Element = document.getElementById('pokemon1');
-const pokemon2Element = document.getElementById('pokemon2');
-const battleLog = document.getElementById('battle-log');
+const pokemon1Element = document.getElementById("pokemon1");
+const pokemon2Element = document.getElementById("pokemon2");
+const startBattleButton = document.getElementById("start-battle");
+const battleLog = document.getElementById("battle-log");
 
 // Game state
 let battleInterval = null;
@@ -673,27 +665,21 @@ function getEffectivenessMessage(effectiveness) {
   return "";
 }
 
-function shouldApplyDamage(attackerTypes, defender, damage) {
-  if (defender.ability === "Wonder Guard") {
-    const effectiveness = calculateEffectiveness(attackerTypes, defender.types);
-    return effectiveness > 1;
-  }
-  return true;
-}
-
 function displayPokemon(pokemon, element) {
   const img = element.querySelector(".pokemon-image");
   const name = element.querySelector(".pokemon-name");
   const types = element.querySelector(".pokemon-types");
   const hp = element.querySelector(".pokemon-hp");
-  const ability = element.querySelector(".pokemon-ability") || document.createElement("p");
   
   img.src = pokemon.image;
   img.alt = pokemon.name;
   name.textContent = pokemon.name;
   hp.textContent = `HP: ${pokemon.hp}`;
   
+  // Clear previous types
   types.innerHTML = "";
+  
+  // Add new type badges
   pokemon.types.forEach(type => {
     const typeBadge = document.createElement("span");
     typeBadge.className = `type-badge type-${type}`;
@@ -701,134 +687,114 @@ function displayPokemon(pokemon, element) {
     types.appendChild(typeBadge);
   });
   
-  ability.className = "pokemon-ability";
-  if (pokemon.ability) {
-    ability.textContent = `Ability: ${pokemon.ability}`;
-    if (pokemon.ability === "Wonder Guard") {
-      element.classList.add("wonder-guard-effect");
-    } else {
-      element.classList.remove("wonder-guard-effect");
-    }
-  } else {
-    ability.textContent = "";
-    element.classList.remove("wonder-guard-effect");
-  }
-  
-  if (!element.querySelector(".pokemon-ability")) {
-    element.appendChild(ability);
-  }
-  
+  // Remove all animation classes
   element.classList.remove("attack-animation", "damage-animation", "victory-animation", "faint-animation");
 }
-// Battle functions
-function simulateBattle(pokemon1, pokemon2) {
-  // Create copies of the Pokémon to avoid modifying originals
-  const battlePokemon1 = {...pokemon1};
-  const battlePokemon2 = {...pokemon2};
-  
-  battleLog.innerHTML = "";
-  startBattleBtn.disabled = true;
-  
-  displayPokemon(battlePokemon1, pokemon1Element);
-  displayPokemon(battlePokemon2, pokemon2Element);
 
-  let attacker = battlePokemon1;
-  let defender = battlePokemon2;
+function simulateBattle(pokemon1, pokemon2) {
+  // Reset battle log
+  battleLog.innerHTML = "";
+  
+  // Disable start button
+  startBattleButton.disabled = true;
+  
+  // Reset Pokémon display
+  displayPokemon(pokemon1, pokemon1Element);
+  displayPokemon(pokemon2, pokemon2Element);
+  
+  let attacker = pokemon1;
+  let defender = pokemon2;
   let attackerElement = pokemon1Element;
   let defenderElement = pokemon2Element;
-
+  
   battleInterval = setInterval(() => {
-    if (battlePokemon1.hp <= 0 || battlePokemon2.hp <= 0) {
-      endBattle(battlePokemon1, battlePokemon2);
+    if (pokemon1.hp <= 0 || pokemon2.hp <= 0) {
+      endBattle(pokemon1, pokemon2);
       return;
     }
-
+    
+    // Calculate damage with type effectiveness
     const baseDamage = Math.floor(Math.random() * 10) + 1;
     const effectiveness = calculateEffectiveness(attacker.types, defender.types);
     const damage = Math.max(1, Math.floor(baseDamage * effectiveness));
     
-    let attackMessage = `${attacker.name} attacks! `;
+    defender.hp -= damage;
     
-    if (shouldApplyDamage(attacker.types, defender, damage)) {
-      defender.hp -= damage;
-      attackMessage += `${getEffectivenessMessage(effectiveness)} ${defender.name} takes ${damage} damage! (${Math.max(0, defender.hp)} HP left)`;
-      defenderElement.querySelector(".pokemon-hp").textContent = `HP: ${Math.max(0, defender.hp)}`;
-    } else {
-      attackMessage += `${defender.name}'s Wonder Guard blocked the attack!`;
-    }
-
-    battleLog.innerHTML += attackMessage + "<br>";
+    // Update HP display
+    defenderElement.querySelector(".pokemon-hp").textContent = `HP: ${Math.max(0, defender.hp)}`;
+    
+    // Log the attack
+    let logMessage = `${attacker.name} attacks! `;
+    logMessage += getEffectivenessMessage(effectiveness);
+    logMessage += ` ${defender.name} takes ${damage} damage! (${defender.hp > 0 ? defender.hp : 0} HP left)<br>`;
+    battleLog.innerHTML += logMessage;
     battleLog.scrollTop = battleLog.scrollHeight;
-
+    
+    // Animations
     attackerElement.classList.add("attack-animation");
     defenderElement.classList.add("damage-animation");
-
+    
+    // Remove animations after they complete
     setTimeout(() => {
       attackerElement.classList.remove("attack-animation");
       defenderElement.classList.remove("damage-animation");
       
+      // Check if defender fainted
       if (defender.hp <= 0) {
         defenderElement.classList.add("faint-animation");
-        endBattle(battlePokemon1, battlePokemon2);
-      } else {
-        [attacker, defender] = [defender, attacker];
-        [attackerElement, defenderElement] = [defenderElement, attackerElement];
+        endBattle(pokemon1, pokemon2);
       }
     }, 500);
-  }, 1500);
+    
+    // Switch roles for next turn
+    [attacker, defender] = [defender, attacker];
+    [attackerElement, defenderElement] = [defenderElement, attackerElement];
+    
+  }, 1500); // 1.5 seconds between turns
 }
 
 function endBattle(pokemon1, pokemon2) {
   clearInterval(battleInterval);
   battleInterval = null;
-  startBattleBtn.disabled = false;
-
+  
   const winner = pokemon1.hp > 0 ? pokemon1 : pokemon2;
-  setTimeout(() => showVictoryScreen(winner), 1000);
+  const winnerElement = winner === pokemon1 ? pokemon1Element : pokemon2Element;
+  
+  battleLog.innerHTML += `<strong>${winner.name} wins the battle!</strong><br>`;
+  battleLog.scrollTop = battleLog.scrollHeight;
+  
+  winnerElement.classList.add("victory-animation");
+  
+  // Re-enable start button
+  startBattleButton.disabled = false;
 }
 
 // Event listeners
-function initializeGame() {
-  startGameBtn.addEventListener("click", () => {
-    const [pokemon1, pokemon2] = getTwoUniquePokemon();
-    currentPokemon1 = { ...pokemon1 };
-    currentPokemon2 = { ...pokemon2 };
-    showVsScreen(currentPokemon1, currentPokemon2);
-  });
+startBattleButton.addEventListener("click", () => {
+  // Stop any ongoing battle
+  if (battleInterval) {
+    clearInterval(battleInterval);
+    battleInterval = null;
+  }
+  
+  // Get new Pokémon
+  const [pokemon1, pokemon2] = getTwoUniquePokemon();
+  
+  // Reset their HP
+  const originalPokemon1 = pokemonList.find(p => p.name === pokemon1.name);
+  const originalPokemon2 = pokemonList.find(p => p.name === pokemon2.name);
+  
+  currentPokemon1 = { ...originalPokemon1 };
+  currentPokemon2 = { ...originalPokemon2 };
+  
+  // Start battle
+  simulateBattle(currentPokemon1, currentPokemon2);
+});
 
-  startBattleBtn.addEventListener("click", () => {
-    if (battleInterval) clearInterval(battleInterval);
-    const [pokemon1, pokemon2] = getTwoUniquePokemon();
-    currentPokemon1 = { ...pokemon1 };
-    currentPokemon2 = { ...pokemon2 };
-    showVsScreen(currentPokemon1, currentPokemon2);
-  });
+// Initialize with random Pokémon
+const [initialPokemon1, initialPokemon2] = getTwoUniquePokemon();
+currentPokemon1 = { ...initialPokemon1 };
+currentPokemon2 = { ...initialPokemon2 };
+displayPokemon(currentPokemon1, pokemon1Element);
+displayPokemon(currentPokemon2, pokemon2Element);
 
-  continueBtn.addEventListener("click", () => {
-    showScreen(gameScreen);
-  });
-
-  howToPlayBtn.addEventListener("click", () => {
-    modal.classList.remove('hidden');
-  });
-
-  howToPlayBtnTitle.addEventListener("click", () => {
-    modal.classList.remove('hidden');
-  });
-
-  closeModal.addEventListener("click", () => {
-    modal.classList.add('hidden');
-  });
-
-  window.addEventListener("click", (event) => {
-    if (event.target == modal) {
-      modal.classList.add('hidden');
-    }
-  });
-
-  // Initialize game
-  showScreen(titleScreen);
-}
-
-// Start the game when DOM is loaded
-document.addEventListener('DOMContentLoaded', initializeGame);
