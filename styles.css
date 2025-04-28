@@ -38,8 +38,8 @@ h1 {
 }
 
 .pokemon-image {
-  width: 120px;
-  height: 120px;
+  width: 100px;
+  height: 100px;
   background-color: #ffffff;
   border-radius: 50%;
   padding: 10px;
