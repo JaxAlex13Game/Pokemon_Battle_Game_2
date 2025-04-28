@@ -1,26 +1,3 @@
-// Add this at the beginning of your script.js
-
-// Title Screen Functionality
-const titleScreen = document.getElementById("title-screen");
-const gameScreen = document.getElementById("game-screen");
-const startGameBtn = document.getElementById("start-game");
-const howToPlayBtnTitle = document.getElementById("how-to-play-btn");
-
-startGameBtn.addEventListener("click", () => {
-  titleScreen.style.display = "none";
-  gameScreen.style.display = "block";
-  
-  // Initialize game with random Pokémon
-  const [initialPokemon1, initialPokemon2] = getTwoUniquePokemon();
-  currentPokemon1 = { ...initialPokemon1 };
-  currentPokemon2 = { ...initialPokemon2 };
-  displayPokemon(currentPokemon1, pokemon1Element);
-  displayPokemon(currentPokemon2, pokemon2Element);
-});
-
-howToPlayBtnTitle.addEventListener("click", () => {
-  modal.style.display = "block";
-});
 
 // The rest of your existing JavaScript code remains the same...
 // Type effectiveness chart
@@ -643,8 +620,6 @@ const pokemonList = [
 // DOM Elements
 const titleScreen = document.getElementById('title-screen');
 const gameScreen = document.getElementById('game-screen');
-const vsScreen = document.getElementById('vs-screen');
-const victoryScreen = document.getElementById('victory-screen');
 const startGameBtn = document.getElementById('start-game');
 const startBattleBtn = document.getElementById('start-battle');
 const continueBtn = document.getElementById('continue-btn');
@@ -745,33 +720,6 @@ function displayPokemon(pokemon, element) {
   
   element.classList.remove("attack-animation", "damage-animation", "victory-animation", "faint-animation");
 }
-
-// Screen functions
-function showScreen(screen) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
-  screen.classList.remove('hidden');
-}
-
-function showVsScreen(pokemon1, pokemon2) {
-  document.getElementById('vs-pokemon1-img').src = pokemon1.image;
-  document.getElementById('vs-pokemon1-name').textContent = pokemon1.name;
-  document.getElementById('vs-pokemon2-img').src = pokemon2.image;
-  document.getElementById('vs-pokemon2-name').textContent = pokemon2.name;
-  
-  showScreen(vsScreen);
-  
-  setTimeout(() => {
-    showScreen(gameScreen);
-    simulateBattle(pokemon1, pokemon2);
-  }, 2000); // Reduced from 3000 to 2000 for better UX
-}
-
-function showVictoryScreen(winner) {
-  document.getElementById('winner-img').src = winner.image;
-  document.getElementById('winner-name').textContent = winner.name;
-  showScreen(victoryScreen);
-}
-
 // Battle functions
 function simulateBattle(pokemon1, pokemon2) {
   // Create copies of the Pokémon to avoid modifying originals
